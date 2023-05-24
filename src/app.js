@@ -20,6 +20,10 @@ app.use(express.static(publicDir));
 
 io.on("connection", (socket) => {
   console.log("New websocket connection!");
+
+  socket.on("sendMessage", (message) => {
+    io.emit("message", message);
+  });
 });
 
 module.exports = server;
