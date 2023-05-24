@@ -24,6 +24,13 @@ io.on("connection", (socket) => {
   socket.on("sendMessage", (message) => {
     io.emit("message", message);
   });
+
+  socket.on("sendLocation", (coords) => {
+    io.emit(
+      "message",
+      `https://google.com/maps?q=${coords.latitude},${coords.longitude}`
+    );
+  });
 });
 
 module.exports = server;
