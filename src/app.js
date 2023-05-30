@@ -1,9 +1,9 @@
 const express = require("express");
-
 const http = require("http");
 const socketio = require("socket.io");
 const bodyParser = require("body-parser");
 const path = require("path");
+const Filter = require("bad-words");
 require("dotenv").config();
 
 require("./db/mongo");
@@ -21,18 +21,26 @@ app.use(express.static(publicDir));
 io.on("connection", (socket) => {
   console.log("New websocket connection!");
 
-  socket.on("sendMessage", (message) => {
+  socket.on("sendMessage", (message, callback) => {
+    const filter = new Filter();
+
+    if (filter.isProfane(message)) {
+      return callback("Message contain profane!");
+    }
+
     io.emit("message", message);
+    callback();
   });
 
   socket.emit("message", "Welcome to chat.");
   socket.broadcast.emit("message", "A new user has joined!");
 
-  socket.on("sendLocation", (coords) => {
+  socket.on("sendLocation", (coords, callback) => {
     io.emit(
       "message",
       `https://google.com/maps?q=${coords.latitude},${coords.longitude}`
     );
+    callback();
   });
 
   socket.on("disconnect", () => {
