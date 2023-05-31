@@ -6,6 +6,7 @@ const path = require("path");
 const Filter = require("bad-words");
 require("dotenv").config();
 
+const { generateMessage, generateLocationMessage } = require("./utils/message");
 require("./db/mongo");
 
 const publicDir = path.join(__dirname, "../public");
@@ -28,23 +29,25 @@ io.on("connection", (socket) => {
       return callback("Message contain profane!");
     }
 
-    io.emit("message", message);
+    io.emit("message", generateMessage(message));
     callback();
   });
 
-  socket.emit("message", "Welcome to chat.");
-  socket.broadcast.emit("message", "A new user has joined!");
+  socket.emit("message", generateMessage("Welcome to chat."));
+  socket.broadcast.emit("message", generateMessage("A new user has joined!"));
 
   socket.on("sendLocation", (coords, callback) => {
     io.emit(
-      "message",
-      `https://google.com/maps?q=${coords.latitude},${coords.longitude}`
+      "locationMessage",
+      generateLocationMessage(
+        `https://google.com/maps?q=${coords.latitude},${coords.longitude}`
+      )
     );
     callback();
   });
 
   socket.on("disconnect", () => {
-    io.emit("message", "A user has left!");
+    io.emit("message", generateMessage("A user has left!"));
   });
 });
 

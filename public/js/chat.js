@@ -5,6 +5,7 @@ const $locationBtn = document.querySelector("#location-button");
 const $messagesContainer = document.querySelector("#messages");
 
 const messageTemplate = document.querySelector("#message-template").innerHTML;
+const locationTemplate = document.querySelector("#location-template").innerHTML;
 
 const socket = io();
 
@@ -32,27 +33,41 @@ $locationBtn.addEventListener("click", (e) => {
 
   $locationBtn.setAttribute("disabled", true);
 
-  navigator.geolocation.getCurrentPosition((position) => {
-    const coords = {
-      latitude: position.coords.latitude,
-      longitude: position.coords.longitude,
-    };
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const coords = {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+      };
 
-    socket.emit("sendLocation", coords, (error) => {
+      socket.emit("sendLocation", coords, (error) => {
+        $locationBtn.removeAttribute("disabled");
+
+        if (error) {
+          return console.log(error);
+        }
+
+        console.log("Location shared!");
+      });
+    },
+    () => {
       $locationBtn.removeAttribute("disabled");
-
-      if (error) {
-        return console.log(error);
-      }
-
-      console.log("Location shared!");
-    });
-  });
+    }
+  );
 });
 
 socket.on("message", (message) => {
-  console.log(message);
+  const html = Mustache.render(messageTemplate, {
+    message: message.text,
+    createdAt: moment(message.createdAt).format("hh:mm a"),
+  });
+  $messagesContainer.insertAdjacentHTML("beforeend", html);
+});
 
-  const html = Mustache.render(messageTemplate, { message });
+socket.on("locationMessage", (location) => {
+  const html = Mustache.render(locationTemplate, {
+    url: location.url,
+    createdAt: moment(message.createdAt).format("hh:mm a"),
+  });
   $messagesContainer.insertAdjacentHTML("beforeend", html);
 });
