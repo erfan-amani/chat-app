@@ -2,6 +2,9 @@ const $messageForm = document.querySelector("#message-form");
 const $messageBtn = $messageForm.querySelector("button");
 const $messageInput = $messageForm.querySelector("#message");
 const $locationBtn = document.querySelector("#location-button");
+const $messagesContainer = document.querySelector("#messages");
+
+const messageTemplate = document.querySelector("#message-template").innerHTML;
 
 const socket = io();
 
@@ -49,4 +52,7 @@ $locationBtn.addEventListener("click", (e) => {
 
 socket.on("message", (message) => {
   console.log(message);
+
+  const html = Mustache.render(messageTemplate, { message });
+  $messagesContainer.insertAdjacentHTML("beforeend", html);
 });

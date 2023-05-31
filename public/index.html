@@ -9,15 +9,22 @@
   <body>
     <h1>Chat app</h1>
 
+    <div id="messages"></div>
+
     <form id="message-form">
-      <div>
-        <label for="message">Message</label>
-        <input type="text" name="message" id="message" />
-      </div>
+      <label for="message">Message</label>
+      <input type="text" name="message" id="message" />
+
+      <button type="submit">Send</button>
     </form>
-    <button type="submit">Send</button>
 
     <button id="location-button">Send location</button>
+
+    <script id="message-template" type="text/html">
+      <div>{{ message }}</div>
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/chat.js"></script>
