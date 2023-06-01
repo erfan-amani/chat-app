@@ -1,7 +1,7 @@
 const $messageForm = document.querySelector("#message-form");
 const $messageBtn = $messageForm.querySelector("button");
 const $messageInput = $messageForm.querySelector("#message");
-const $locationBtn = document.querySelector("#location-button");
+const $locationBtn = document.querySelector("#send-location");
 const $messagesContainer = document.querySelector("#messages");
 
 const messageTemplate = document.querySelector("#message-template").innerHTML;
