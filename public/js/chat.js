@@ -3,9 +3,11 @@ const $messageBtn = $messageForm.querySelector("button");
 const $messageInput = $messageForm.querySelector("#message");
 const $locationBtn = document.querySelector("#send-location");
 const $messagesContainer = document.querySelector("#messages");
+const $sidebar = document.querySelector("#sidebar");
 
 const messageTemplate = document.querySelector("#message-template").innerHTML;
 const locationTemplate = document.querySelector("#location-template").innerHTML;
+const $sidebarTemplate = document.querySelector("#sidebar-template").innerHTML;
 
 const { username, room } = Qs.parse(location.search, {
   ignoreQueryPrefix: true,
@@ -90,4 +92,15 @@ socket.emit("join", { username, room }, (error) => {
     alert(error);
     window.location.href = "/";
   }
+});
+
+socket.on("roomData", (roomData) => {
+  const { users, room } = roomData;
+
+  const html = Mustache.render($sidebarTemplate, {
+    users,
+    room,
+  });
+
+  $sidebar.innerHTML = html;
 });

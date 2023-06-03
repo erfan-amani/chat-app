@@ -7,7 +7,12 @@ const Filter = require("bad-words");
 require("dotenv").config();
 
 const { generateMessage, generateLocationMessage } = require("./utils/message");
-const { addUser, getUser, removeUser } = require("./utils/users");
+const {
+  addUser,
+  getUser,
+  removeUser,
+  getUsersInRoom,
+} = require("./utils/users");
 require("./db/mongo");
 
 const publicDir = path.join(__dirname, "../public");
@@ -24,13 +29,16 @@ io.on("connection", (socket) => {
   socket.on("join", ({ username, room }, callback) => {
     socket.join(room);
 
-    console.log({ username, room, id: socket.id });
-
     const { user, error } = addUser({ username, room, id: socket.id });
 
     if (error) {
       return callback(error);
     }
+
+    io.to(user.room).emit("roomData", {
+      room: user.room,
+      users: getUsersInRoom(user.room),
+    });
 
     socket.emit("message", generateMessage(user.username, "Welcome to chat."));
     socket.broadcast
@@ -72,6 +80,11 @@ io.on("connection", (socket) => {
     const user = removeUser(socket.id);
 
     if (user) {
+      io.to(user.room).emit("roomData", {
+        room: user.room,
+        users: getUsersInRoom(user.room),
+      });
+
       io.to(user.room).emit(
         "message",
         generateMessage(user.username, `${user.username} has left!`)
