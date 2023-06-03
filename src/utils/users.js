@@ -29,7 +29,7 @@ const removeUser = (id) => {
 };
 
 const getUser = (id) => {
-  return users.find((u) => u.id === id);
+  return users.find((u) => u.id === id) || {};
 };
 
 const getUsersInRoom = (room) => {
