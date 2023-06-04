@@ -13,7 +13,6 @@ const {
   removeUser,
   getUsersInRoom,
 } = require("./utils/users");
-require("./db/mongo");
 
 const publicDir = path.join(__dirname, "../public");
 
