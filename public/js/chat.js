@@ -15,6 +15,22 @@ const { username, room } = Qs.parse(location.search, {
 
 const socket = io();
 
+const autoScroll = () => {
+  const $newMessage = $messagesContainer.lastElementChild;
+
+  const newMessageHeight =
+    $newMessage.offsetHeight +
+    parseInt(getComputedStyle($newMessage).marginBottom);
+
+  // Auto scroll works when we are seeing last message
+  if (
+    $messagesContainer.scrollHeight - newMessageHeight <=
+    $messagesContainer.scrollTop + $messagesContainer.offsetHeight
+  ) {
+    $messagesContainer.scrollTop = $messagesContainer.scrollHeight;
+  }
+};
+
 // SEND NEW MESSAGE
 $messageForm.addEventListener("submit", (e) => {
   e.preventDefault();
@@ -76,6 +92,8 @@ socket.on("message", (message) => {
     createdAt: moment(message.createdAt).format("hh:mm a"),
   });
   $messagesContainer.insertAdjacentHTML("beforeend", html);
+
+  autoScroll();
 });
 
 socket.on("locationMessage", (location) => {
@@ -85,6 +103,8 @@ socket.on("locationMessage", (location) => {
     createdAt: moment(message.createdAt).format("hh:mm a"),
   });
   $messagesContainer.insertAdjacentHTML("beforeend", html);
+
+  autoScroll();
 });
 
 socket.emit("join", { username, room }, (error) => {
